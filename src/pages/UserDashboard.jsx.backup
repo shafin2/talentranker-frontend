@@ -1,0 +1,226 @@
+import { useState, useEffect } from 'react';
+import { useAuth } from '../contexts/AuthContext';
+import { jdService, cvService, rankingService } from '../services/talentranker';
+import UsageStats from '../components/user/UsageStats';
+import JDManagement from '../components/user/JDManagement';
+import CVManagement from '../components/user/CVManagement';
+import RankingInterface from '../components/user/RankingInterface';
+import RankingHistory from '../components/user/RankingHistory';
+import PlansUpgrade from '../components/user/PlansUpgrade';
+
+const UserDashboard = () => {
+  const { user, refreshUser } = useAuth();
+  const [activeTab, setActiveTab] = useState('overview');
+  const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState({
+    jds: [],
+    cvs: [],
+    rankings: [],
+  });
+
+  useEffect(() => {
+    loadData();
+    // Refresh user data when dashboard loads (in case plan was updated by admin)
+    refreshUser().catch(err => console.error('Failed to refresh user:', err));
+  }, []);
+
+  const loadData = async () => {
+    try {
+      setLoading(true);
+      const [jdsResponse, cvsResponse, rankingsResponse] = await Promise.all([
+        jdService.getAllJDs(),
+        cvService.getAllCVs(),
+        rankingService.getResults(),
+      ]);
+      
+      setStats({
+        jds: jdsResponse.data || [],
+        cvs: cvsResponse.data || [],
+        rankings: rankingsResponse.data || [],
+      });
+    } catch (error) {
+      console.error('Failed to load dashboard data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const tabs = [
+    { id: 'overview', label: 'Overview', icon: '📊' },
+    { id: 'job-descriptions', label: 'Job Descriptions', icon: '📝' },
+    { id: 'cvs', label: 'CVs', icon: '📄' },
+    { id: 'ranking', label: 'Rank CVs', icon: '🎯' },
+    { id: 'history', label: 'History', icon: '📜' },
+    { id: 'plans', label: 'Upgrade Plan', icon: '⭐' },
+  ];
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+      {/* Header */}
+      <div className="bg-white border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="flex justify-between items-center">
+            <div>
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+                TalentRanker Dashboard
+              </h1>
+              <p className="mt-1 text-gray-600">Welcome back, {user?.name || 'User'}!</p>
+            </div>
+            <div className="text-right">
+              <p className="text-sm text-gray-500">Current Plan</p>
+              <p className="text-lg font-semibold text-[#667eea]">
+                {user?.plan?.name || 'Freemium'}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Tabs */}
+      <div className="bg-white border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex space-x-1 overflow-x-auto">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`
+                  px-6 py-4 text-sm font-medium whitespace-nowrap transition-all duration-200
+                  ${activeTab === tab.id
+                    ? 'text-[#667eea] border-b-2 border-[#667eea] bg-gradient-to-t from-purple-50 to-transparent'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                  }
+                `}
+              >
+                <span className="mr-2">{tab.icon}</span>
+                {tab.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {loading ? (
+          <div className="flex items-center justify-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#667eea]"></div>
+          </div>
+        ) : (
+          <>
+            {activeTab === 'overview' && (
+              <div className="space-y-6">
+                <UsageStats user={user} stats={stats} />
+                
+                {/* Quick Actions */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <button
+                    onClick={() => setActiveTab('job-descriptions')}
+                    className="p-6 bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-200 border-2 border-transparent hover:border-[#667eea] group"
+                  >
+                    <div className="text-4xl mb-3">📝</div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-[#667eea] transition-colors">
+                      Upload Job Description
+                    </h3>
+                    <p className="text-gray-600 text-sm">
+                      Add a new job description to start ranking candidates
+                    </p>
+                  </button>
+
+                  <button
+                    onClick={() => setActiveTab('cvs')}
+                    className="p-6 bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-200 border-2 border-transparent hover:border-[#764ba2] group"
+                  >
+                    <div className="text-4xl mb-3">📄</div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-[#764ba2] transition-colors">
+                      Upload CVs
+                    </h3>
+                    <p className="text-gray-600 text-sm">
+                      Upload multiple candidate CVs for evaluation
+                    </p>
+                  </button>
+
+                  <button
+                    onClick={() => setActiveTab('ranking')}
+                    className="p-6 bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-200 border-2 border-transparent hover:border-gradient group"
+                    style={{
+                      background: activeTab === 'ranking' ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' : 'white',
+                    }}
+                  >
+                    <div className="text-4xl mb-3">🎯</div>
+                    <h3 className={`text-lg font-semibold mb-2 transition-colors ${
+                      activeTab === 'ranking' ? 'text-white' : 'text-gray-900 group-hover:bg-gradient-to-r group-hover:from-[#667eea] group-hover:to-[#764ba2] group-hover:bg-clip-text group-hover:text-transparent'
+                    }`}>
+                      Rank Candidates
+                    </h3>
+                    <p className={`text-sm ${activeTab === 'ranking' ? 'text-purple-100' : 'text-gray-600'}`}>
+                      AI-powered matching of CVs to job descriptions
+                    </p>
+                  </button>
+                </div>
+
+                {/* Recent Activity */}
+                <div className="bg-white rounded-xl shadow-sm p-6">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h3>
+                  {stats.rankings.length > 0 ? (
+                    <div className="space-y-3">
+                      {stats.rankings.slice(0, 5).map((ranking, index) => (
+                        <div key={ranking._id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                          <div className="flex items-center space-x-3">
+                            <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#667eea] to-[#764ba2] flex items-center justify-center text-white font-semibold">
+                              {index + 1}
+                            </div>
+                            <div>
+                              <p className="font-medium text-gray-900">
+                                {ranking.jobDescription?.title || 'Job Description'}
+                              </p>
+                              <p className="text-sm text-gray-500">
+                                {ranking.results?.length || 0} candidates ranked
+                              </p>
+                            </div>
+                          </div>
+                          <button
+                            onClick={() => setActiveTab('history')}
+                            className="text-[#667eea] hover:text-[#764ba2] text-sm font-medium"
+                          >
+                            View Details →
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-gray-500 text-center py-8">
+                      No rankings yet. Start by uploading a job description and CVs!
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'job-descriptions' && (
+              <JDManagement jds={stats.jds} onUpdate={loadData} />
+            )}
+
+            {activeTab === 'cvs' && (
+              <CVManagement cvs={stats.cvs} onUpdate={loadData} />
+            )}
+
+            {activeTab === 'ranking' && (
+              <RankingInterface jds={stats.jds} cvs={stats.cvs} onUpdate={loadData} />
+            )}
+
+            {activeTab === 'history' && (
+              <RankingHistory rankings={stats.rankings} onUpdate={loadData} />
+            )}
+
+            {activeTab === 'plans' && (
+              <PlansUpgrade currentPlan={user?.plan} onUpdate={loadData} />
+            )}
+          </>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default UserDashboard;

@@ -1,277 +1,78 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { CheckIcon } from '@heroicons/react/24/solid';
-import { Link } from 'react-router-dom';
+import { planAPI } from '../services/api';
+import { detectUserCountry } from '../utils/countryDetection';
 
 const Pricing = () => {
   const [activeTab, setActiveTab] = useState('pakistan');
-  const [billingCycle, setBillingCycle] = useState('monthly');
+  const [billingCycle, setBillingCycle] = useState('Monthly');
+  const [plans, setPlans] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const pakistanPlans = {
-    monthly: [
-      {
-        name: 'Starter',
-        price: 'Rs 2,500',
-        period: '/month',
-        features: [
-          '10 job postings per month',
-          'Up to 100 CV evaluations',
-          'Basic ranking algorithm',
-          'Email support',
-          'Export to PDF'
-        ]
-      },
-      {
-        name: 'Professional',
-        price: 'Rs 5,000',
-        period: '/month',
-        popular: true,
-        features: [
-          '25 job postings per month',
-          'Up to 500 CV evaluations',
-          'Advanced AI ranking',
-          'Priority support',
-          'Custom filters',
-          'Team collaboration'
-        ]
-      },
-      {
-        name: 'Enterprise',
-        price: 'Rs 12,000',
-        period: '/month',
-        features: [
-          'Unlimited job postings',
-          'Unlimited CV evaluations',
-          'Custom AI training',
-          'Dedicated support',
-          'API access',
-          'White-label solution'
-        ]
-      }
-    ],
-    sixMonth: [
-      {
-        name: 'Starter',
-        price: 'Rs 12,000',
-        period: '/6 months',
-        originalPrice: 'Rs 15,000',
-        features: [
-          '10 job postings per month',
-          'Up to 100 CV evaluations',
-          'Basic ranking algorithm',
-          'Email support',
-          'Export to PDF'
-        ]
-      },
-      {
-        name: 'Professional',
-        price: 'Rs 24,000',
-        period: '/6 months',
-        originalPrice: 'Rs 30,000',
-        popular: true,
-        features: [
-          '25 job postings per month',
-          'Up to 500 CV evaluations',
-          'Advanced AI ranking',
-          'Priority support',
-          'Custom filters',
-          'Team collaboration'
-        ]
-      },
-      {
-        name: 'Enterprise',
-        price: 'Rs 60,000',
-        period: '/6 months',
-        originalPrice: 'Rs 72,000',
-        features: [
-          'Unlimited job postings',
-          'Unlimited CV evaluations',
-          'Custom AI training',
-          'Dedicated support',
-          'API access',
-          'White-label solution'
-        ]
-      }
-    ],
-    annual: [
-      {
-        name: 'Starter',
-        price: 'Rs 20,000',
-        period: '/year',
-        originalPrice: 'Rs 30,000',
-        features: [
-          '10 job postings per month',
-          'Up to 100 CV evaluations',
-          'Basic ranking algorithm',
-          'Email support',
-          'Export to PDF'
-        ]
-      },
-      {
-        name: 'Professional',
-        price: 'Rs 40,000',
-        period: '/year',
-        originalPrice: 'Rs 60,000',
-        popular: true,
-        features: [
-          '25 job postings per month',
-          'Up to 500 CV evaluations',
-          'Advanced AI ranking',
-          'Priority support',
-          'Custom filters',
-          'Team collaboration'
-        ]
-      },
-      {
-        name: 'Enterprise',
-        price: 'Rs 100,000',
-        period: '/year',
-        originalPrice: 'Rs 144,000',
-        features: [
-          'Unlimited job postings',
-          'Unlimited CV evaluations',
-          'Custom AI training',
-          'Dedicated support',
-          'API access',
-          'White-label solution'
-        ]
-      }
-    ]
+  useEffect(() => {
+    loadPlans();
+    detectUserRegion();
+  }, []);
+
+  const detectUserRegion = () => {
+    try {
+      const country = detectUserCountry();
+      setActiveTab(country.toLowerCase());
+    } catch (error) {
+      console.log('Could not detect region, using default');
+    }
   };
 
-  const internationalPlans = {
-    monthly: [
-      {
-        name: 'Starter',
-        price: '$25',
-        period: '/month',
-        features: [
-          '10 job postings per month',
-          'Up to 100 CV evaluations',
-          'Basic ranking algorithm',
-          'Email support',
-          'Export to PDF'
-        ]
-      },
-      {
-        name: 'Professional',
-        price: '$50',
-        period: '/month',
-        popular: true,
-        features: [
-          '25 job postings per month',
-          'Up to 500 CV evaluations',
-          'Advanced AI ranking',
-          'Priority support',
-          'Custom filters',
-          'Team collaboration'
-        ]
-      },
-      {
-        name: 'Enterprise',
-        price: '$120',
-        period: '/month',
-        features: [
-          'Unlimited job postings',
-          'Unlimited CV evaluations',
-          'Custom AI training',
-          'Dedicated support',
-          'API access',
-          'White-label solution'
-        ]
-      }
-    ],
-    sixMonth: [
-      {
-        name: 'Starter',
-        price: '$120',
-        period: '/6 months',
-        originalPrice: '$150',
-        features: [
-          '10 job postings per month',
-          'Up to 100 CV evaluations',
-          'Basic ranking algorithm',
-          'Email support',
-          'Export to PDF'
-        ]
-      },
-      {
-        name: 'Professional',
-        price: '$240',
-        period: '/6 months',
-        originalPrice: '$300',
-        popular: true,
-        features: [
-          '25 job postings per month',
-          'Up to 500 CV evaluations',
-          'Advanced AI ranking',
-          'Priority support',
-          'Custom filters',
-          'Team collaboration'
-        ]
-      },
-      {
-        name: 'Enterprise',
-        price: '$600',
-        period: '/6 months',
-        originalPrice: '$720',
-        features: [
-          'Unlimited job postings',
-          'Unlimited CV evaluations',
-          'Custom AI training',
-          'Dedicated support',
-          'API access',
-          'White-label solution'
-        ]
-      }
-    ],
-    annual: [
-      {
-        name: 'Starter',
-        price: '$200',
-        period: '/year',
-        originalPrice: '$300',
-        features: [
-          '10 job postings per month',
-          'Up to 100 CV evaluations',
-          'Basic ranking algorithm',
-          'Email support',
-          'Export to PDF'
-        ]
-      },
-      {
-        name: 'Professional',
-        price: '$400',
-        period: '/year',
-        originalPrice: '$600',
-        popular: true,
-        features: [
-          '25 job postings per month',
-          'Up to 500 CV evaluations',
-          'Advanced AI ranking',
-          'Priority support',
-          'Custom filters',
-          'Team collaboration'
-        ]
-      },
-      {
-        name: 'Enterprise',
-        price: '$1000',
-        period: '/year',
-        originalPrice: '$1440',
-        features: [
-          'Unlimited job postings',
-          'Unlimited CV evaluations',
-          'Custom AI training',
-          'Dedicated support',
-          'API access',
-          'White-label solution'
-        ]
-      }
-    ]
+  const loadPlans = async () => {
+    try {
+      const response = await planAPI.getAllPlans();
+      setPlans(response.plans || []);
+    } catch (error) {
+      console.error('Failed to load plans:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const currentPlans = activeTab === 'pakistan' ? pakistanPlans : internationalPlans;
+  // Filter and group plans
+  const getFilteredPlans = () => {
+    const regionFilter = activeTab === 'pakistan' ? 'Pakistan' : 'International';
+    const filteredPlans = plans.filter(plan => 
+      plan.region === regionFilter && 
+      plan.billingCycle === billingCycle &&
+      plan.name !== 'Freemium' // Hide freemium from pricing page
+    );
+
+    // Group by plan name
+    const grouped = filteredPlans.reduce((acc, plan) => {
+      if (!acc[plan.name]) {
+        acc[plan.name] = plan;
+      }
+      return acc;
+    }, {});
+
+    return Object.values(grouped);
+  };
+
+  const currentPlans = getFilteredPlans();
+
+  const formatPrice = (plan) => {
+    if (plan.price === null || plan.price === undefined) {
+      return 'Custom';
+    }
+    const symbol = plan.currency === 'PKR' ? 'Rs' : '$';
+    return `${symbol} ${plan.price.toLocaleString()}`;
+  };
+
+  const formatBillingCycle = (cycle) => {
+    switch (cycle) {
+      case 'Monthly': return 'month';
+      case 'SixMonth': return '6 months';
+      case 'Annual': return 'year';
+      default: return cycle?.toLowerCase() || '';
+    }
+  };
 
   return (
     <section id="pricing" className="py-20 bg-gray-50">
@@ -325,103 +126,130 @@ const Pricing = () => {
           {/* Billing Cycle Toggle */}
           <div className="flex justify-center mb-12">
             <div className="bg-white rounded-xl p-1 shadow-md">
-              <button
-                onClick={() => setBillingCycle('monthly')}
-                className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 ${
-                  billingCycle === 'monthly'
-                    ? 'bg-primary-100 text-primary-700'
-                    : 'text-gray-600 hover:text-gray-800'
-                }`}
-              >
-                Monthly
-              </button>
-              <button
-                onClick={() => setBillingCycle('sixMonth')}
-                className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 ${
-                  billingCycle === 'sixMonth'
-                    ? 'bg-primary-100 text-primary-700'
-                    : 'text-gray-600 hover:text-gray-800'
-                }`}
-              >
-                6 Months
-                <span className="ml-1 text-xs bg-green-100 text-green-600 px-2 py-1 rounded">20% OFF</span>
-              </button>
-              <button
-                onClick={() => setBillingCycle('annual')}
-                className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 ${
-                  billingCycle === 'annual'
-                    ? 'bg-primary-100 text-primary-700'
-                    : 'text-gray-600 hover:text-gray-800'
-                }`}
-              >
-                Annual
-                <span className="ml-1 text-xs bg-green-100 text-green-600 px-2 py-1 rounded">33% OFF</span>
-              </button>
+              {['Monthly', 'SixMonth', 'Annual'].map((billing) => (
+                <button
+                  key={billing}
+                  onClick={() => setBillingCycle(billing)}
+                  className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 ${
+                    billingCycle === billing
+                      ? 'bg-primary-100 text-primary-700'
+                      : 'text-gray-600 hover:text-gray-800'
+                  }`}
+                >
+                  {billing === 'SixMonth' ? '6 Months' : billing}
+                  {billing === 'SixMonth' && <span className="ml-1 text-xs bg-green-100 text-green-600 px-2 py-1 rounded">Save 17%</span>}
+                  {billing === 'Annual' && <span className="ml-1 text-xs bg-green-100 text-green-600 px-2 py-1 rounded">Save 33%</span>}
+                </button>
+              ))}
             </div>
           </div>
         </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          viewport={{ once: true }}
-          className="grid md:grid-cols-3 gap-8"
-        >
-          {currentPlans[billingCycle].map((plan, index) => (
-            <motion.div
-              key={index}
-              whileHover={{ y: -5 }}
-              className={`bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 p-8 relative ${
-                plan.popular ? 'border-2 border-primary-600' : 'border border-gray-200'
-              }`}
-            >
-              {plan.popular && (
-                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                  <span className="bg-gradient-primary text-white px-4 py-2 rounded-full text-sm font-semibold">
-                    Most Popular
-                  </span>
-                </div>
-              )}
-              
-              <div className="text-center mb-8">
-                <h3 className="text-2xl font-bold text-gray-800 mb-4">{plan.name}</h3>
-                <div className="mb-2">
-                  <span className="text-4xl font-bold text-gray-800">{plan.price}</span>
-                  <span className="text-gray-600">{plan.period}</span>
-                </div>
-                {plan.originalPrice && (
-                  <div className="text-sm text-gray-500">
-                    <span className="line-through">{plan.originalPrice}</span>
+        {loading ? (
+          <div className="flex justify-center items-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div>
+          </div>
+        ) : (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+            className={`grid gap-8 ${
+              currentPlans.length === 1 
+                ? 'grid-cols-1 max-w-md mx-auto' 
+                : currentPlans.length === 2 
+                ? 'grid-cols-1 md:grid-cols-2 max-w-4xl mx-auto' 
+                : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
+            }`}
+          >
+            {currentPlans.map((plan, index) => (
+              <motion.div
+                key={index}
+                whileHover={{ y: -5 }}
+                className={`bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 p-8 relative ${
+                  plan.name === 'Growth' ? 'border-2 border-primary-600' : 'border border-gray-200'
+                }`}
+              >
+                {plan.name === 'Growth' && (
+                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                    <span className="bg-gradient-primary text-white px-4 py-2 rounded-full text-sm font-semibold">
+                      Most Popular
+                    </span>
                   </div>
                 )}
-              </div>
+                
+                <div className="text-center mb-8">
+                  <h3 className="text-2xl font-bold text-gray-800 mb-4">{plan.name}</h3>
+                  <div className="mb-2">
+                    <span className="text-4xl font-bold text-gray-800">{formatPrice(plan)}</span>
+                    {plan.billingCycle && (
+                      <span className="text-gray-600">/{formatBillingCycle(plan.billingCycle)}</span>
+                    )}
+                  </div>
+                  <p className="text-sm text-gray-600">{plan.description}</p>
+                </div>
 
-              <ul className="space-y-4 mb-8">
-                {plan.features.map((feature, featureIndex) => (
-                  <li key={featureIndex} className="flex items-start">
+                <ul className="space-y-4 mb-8">
+                  <li className="flex items-start">
                     <CheckIcon className="w-5 h-5 text-green-500 mt-0.5 mr-3 flex-shrink-0" />
-                    <span className="text-gray-600">{feature}</span>
+                    <span className="text-gray-600">
+                      {plan.jdLimit === -1 || plan.jdLimit === null ? 'Unlimited' : plan.jdLimit} Job Descriptions
+                    </span>
                   </li>
-                ))}
-              </ul>
+                  <li className="flex items-start">
+                    <CheckIcon className="w-5 h-5 text-green-500 mt-0.5 mr-3 flex-shrink-0" />
+                    <span className="text-gray-600">
+                      {plan.cvLimit === -1 || plan.cvLimit === null ? 'Unlimited' : plan.cvLimit} CV Reviews
+                    </span>
+                  </li>
+                  {plan.features?.map((feature, featureIndex) => (
+                    <li key={featureIndex} className="flex items-start">
+                      <CheckIcon className="w-5 h-5 text-green-500 mt-0.5 mr-3 flex-shrink-0" />
+                      <span className="text-gray-600">{feature}</span>
+                    </li>
+                  ))}
+                </ul>
 
-              <Link to="/auth" className="block">
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className={`w-full py-4 rounded-xl font-semibold text-lg transition-all duration-300 ${
-                    plan.popular
-                      ? 'bg-gradient-primary text-white shadow-lg hover:shadow-xl'
-                      : 'border-2 border-primary-600 text-primary-600 hover:bg-primary-50'
-                  }`}
-                >
-                  Select Plan
-                </motion.button>
-              </Link>
-            </motion.div>
-          ))}
-        </motion.div>
+                {plan.price === null ? (
+                  <a 
+                    href="https://forms.gle/YOUR_CONTACT_FORM_ID" 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="block"
+                  >
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className="w-full py-4 rounded-xl font-semibold text-lg transition-all duration-300 border-2 border-primary-600 text-primary-600 hover:bg-primary-50"
+                    >
+                      Contact Sales
+                    </motion.button>
+                  </a>
+                ) : (
+                  <a 
+                    href={`https://forms.gle/YOUR_PURCHASE_FORM_ID?entry.plan=${encodeURIComponent(plan.name)}&entry.region=${encodeURIComponent(plan.region)}&entry.billing=${encodeURIComponent(plan.billingCycle)}&entry.price=${encodeURIComponent(plan.price)}&entry.currency=${encodeURIComponent(plan.currency)}`}
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="block"
+                  >
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className={`w-full py-4 rounded-xl font-semibold text-lg transition-all duration-300 ${
+                        plan.name === 'Growth'
+                          ? 'bg-gradient-primary text-white shadow-lg hover:shadow-xl'
+                          : 'border-2 border-primary-600 text-primary-600 hover:bg-primary-50'
+                      }`}
+                    >
+                      Buy Now
+                    </motion.button>
+                  </a>
+                )}
+              </motion.div>
+            ))}
+          </motion.div>
+        )}
       </div>
     </section>
   );

@@ -84,12 +84,12 @@ const Navigation = () => {
           {/* Desktop Auth Buttons */}
           <div className="hidden md:flex items-center space-x-4">
             <Link
-              to="/auth"
+              to="/login"
               className="text-gray-700 hover:text-primary-600 font-semibold transition-colors duration-300"
             >
               Sign In
             </Link>
-            <Link to="/auth">
+            <Link to="/signup">
               <motion.button
                 whileHover={{ 
                   scale: 1.05,
@@ -163,13 +163,13 @@ const Navigation = () => {
                 ))}
                 <div className="pt-4 border-t border-gray-200/50 space-y-3">
                   <Link
-                    to="/auth"
+                    to="/login"
                     className="block text-gray-700 hover:text-primary-600 font-semibold transition-colors duration-300 py-2"
                     onClick={() => setIsOpen(false)}
                   >
                     Sign In
                   </Link>
-                  <Link to="/auth" onClick={() => setIsOpen(false)}>
+                  <Link to="/signup" onClick={() => setIsOpen(false)}>
                     <motion.button
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
