@@ -32,9 +32,8 @@ const PlansUpgrade = ({ currentPlan, onUpdate }) => {
   };
 
   const handleSelectPlan = (plan) => {
-    setSelectedPlan(plan);
-    setShowModal(true);
-    setMessage('');
+    // Redirect to Google Form for upgrade requests
+    window.open('https://docs.google.com/forms/d/e/1FAIpQLSdASBYtErPtmjmNOSXY9HODZ6Nt4Ubcbte70gCXlAHhMwWxtA/viewform', '_blank');
   };
 
   const handleSubmitRequest = async () => {

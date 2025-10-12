@@ -95,18 +95,28 @@ export const AuthProvider = ({ children }) => {
         window.history.replaceState({}, document.title, window.location.pathname);
       }
 
-      // Try to get user profile
-      if (tokenManager.getAccessToken()) {
-        const user = await authAPI.getProfile();
-        dispatch({
-          type: AUTH_ACTIONS.SET_USER,
-          payload: { user },
-        });
+      // Only try to get user profile if we have a token
+      const accessToken = tokenManager.getAccessToken();
+      if (accessToken) {
+        try {
+          const user = await authAPI.getProfile();
+          dispatch({
+            type: AUTH_ACTIONS.SET_USER,
+            payload: { user },
+          });
+        } catch (error) {
+          // If profile fetch fails, clear invalid token
+          console.error('Failed to fetch profile:', error);
+          tokenManager.clearTokens();
+          dispatch({ type: AUTH_ACTIONS.SET_LOADING, payload: false });
+        }
       } else {
+        // No token, user is not authenticated
         dispatch({ type: AUTH_ACTIONS.SET_LOADING, payload: false });
       }
     } catch (error) {
       console.error('Auth check failed:', error);
+      tokenManager.clearTokens();
       dispatch({ type: AUTH_ACTIONS.SET_LOADING, payload: false });
     }
   };
