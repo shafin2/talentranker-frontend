@@ -151,6 +151,26 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const googleLogin = async (credentialToken) => {
+    dispatch({ type: AUTH_ACTIONS.LOGIN_START });
+
+    try {
+      const { user } = await authAPI.googleAuth(credentialToken);
+      dispatch({
+        type: AUTH_ACTIONS.LOGIN_SUCCESS,
+        payload: { user },
+      });
+      return user;
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || 'Google login failed';
+      dispatch({
+        type: AUTH_ACTIONS.LOGIN_FAILURE,
+        payload: { error: errorMessage },
+      });
+      throw error;
+    }
+  };
+
   const logout = async () => {
     try {
       await authAPI.logout();
@@ -188,6 +208,7 @@ export const AuthProvider = ({ children }) => {
     ...state,
     login,
     signup,
+    googleLogin,
     logout,
     clearError,
     checkAuthStatus,

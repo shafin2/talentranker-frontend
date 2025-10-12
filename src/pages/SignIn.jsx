@@ -7,7 +7,7 @@ import { authAPI } from '../services/auth';
 const SignIn = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, login, loading, error } = useAuth();
+  const { user, login, googleLogin, loading, error } = useAuth();
   
   useEffect(() => {
     // If user is already logged in, redirect to dashboard
@@ -80,10 +80,15 @@ const SignIn = () => {
 
   const handleGoogleSuccess = async (credentialResponse) => {
     try {
-      // The Google OAuth will redirect to our backend endpoint
-      window.location.href = authAPI.googleAuthUrl();
+      // Use the auth context to handle Google login
+      await googleLogin(credentialResponse.credential);
+      
+      // Login successful, navigate to dashboard
+      const from = location.state?.from?.pathname || '/dashboard';
+      navigate(from, { replace: true });
     } catch (error) {
       console.error('Google login failed:', error);
+      // Error is already set in auth context
     }
   };
 

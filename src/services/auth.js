@@ -149,6 +149,13 @@ export const authAPI = {
     }
   },
 
+  googleAuth: async (googleToken) => {
+    const response = await apiClient.post('/auth/google', { token: googleToken });
+    const { accessToken, user } = response.data;
+    tokenManager.setAccessToken(accessToken);
+    return { user, accessToken };
+  },
+
   refreshToken: async () => {
     const response = await apiClient.post('/auth/refresh');
     const { accessToken } = response.data;
