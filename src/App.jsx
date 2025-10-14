@@ -5,6 +5,7 @@ import { AdminAuthProvider } from './contexts/AdminAuthContext';
 import { ToastProvider } from './contexts/ToastContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminProtectedRoute from './components/AdminProtectedRoute';
+import WhatsAppButton from './components/WhatsAppButton';
 
 // Pages
 import Landing from './pages/Landing';
@@ -69,6 +70,7 @@ function App() {
                 </div>
               } />
             </Routes>
+            <WhatsAppButton />
           </div>
           </ToastProvider>
         </AdminAuthProvider>

@@ -49,16 +49,12 @@ const Navigation = () => {
             whileHover={{ scale: 1.05 }}
             transition={{ type: "spring", stiffness: 400, damping: 10 }}
           >
-            <Link to="/" className="flex items-center space-x-2 group">
-              <div className="relative">
-                <div className="w-10 h-10 bg-gradient-primary rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow duration-300">
-                  <SparklesIcon className="w-6 h-6 text-white" />
-                </div>
-                <div className="absolute -top-1 -right-1 w-3 h-3 bg-accent-500 rounded-full animate-pulse"></div>
-              </div>
-              <span className="text-2xl font-black bg-gradient-primary bg-clip-text text-transparent">
-                TalentRanker
-              </span>
+            <Link to="/" className="flex items-center group">
+              <img 
+                src="/logo.png" 
+                alt="TalentRanker Logo" 
+                className="w-20 h-20 object-contain"
+              />
             </Link>
           </motion.div>
 

@@ -242,8 +242,7 @@ const JDManagement = ({ jds, onUpdate }) => {
               <p className="text-gray-600 text-sm mb-4 line-clamp-2">{jd.description}</p>
               
               <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
-                <span>📊 {jd.rankedCVsCount || 0} CVs ranked</span>
-                <span>📄 {jd.filename || 'Text input'}</span>
+                <span> {jd.filename || 'Text input'}</span>
               </div>
 
               <div className="flex space-x-2">

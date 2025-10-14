@@ -85,8 +85,12 @@ const UserDashboard = () => {
         fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform md:translate-x-0 md:static md:inset-0 transition duration-200 ease-in-out`}>
         
         {/* Logo */}
-        <div className="flex items-center justify-center h-16 px-4 bg-gradient-to-r from-purple-600 to-indigo-600">
-          <span className="text-white font-bold text-xl">TalentRanker</span>
+        <div className="flex items-center justify-center h-24 px-4">
+          <img 
+            src="/logo.png" 
+            alt="TalentRanker Logo" 
+            className="w-20 h-20 object-contain"
+          />
         </div>
 
         {/* User Info Card */}
@@ -626,10 +630,6 @@ const JDsTab = ({ userData }) => {
                   <span>Uploaded:</span>
                   <span className="font-medium">{new Date(jd.createdAt).toLocaleDateString()}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span>Ranked CVs:</span>
-                  <span className="font-medium">{jd.rankedCVsCount || 0}</span>
-                </div>
               </div>
               
               <button
@@ -738,9 +738,6 @@ const CVsTab = ({ userData }) => {
                   Filename
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Candidate Name
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Upload Date
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -756,9 +753,6 @@ const CVsTab = ({ userData }) => {
                 <tr key={cv._id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                     {cv.filename}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {cv.candidateName || 'N/A'}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                     {new Date(cv.createdAt).toLocaleDateString()}
@@ -1030,6 +1024,19 @@ const HistoryTab = ({ userData }) => {
           </div>
         </div>
       )}
+
+      {/* Footer */}
+      <div className="fixed bottom-0 left-0 right-0 md:left-64 bg-white border-t border-gray-200 py-2 px-4 z-30">
+        <div className="flex items-center justify-center text-xs text-gray-600">
+          <span>Support: </span>
+          <a 
+            href="mailto:info@ilmoirfan.ai" 
+            className="ml-1 text-purple-600 hover:text-purple-800 font-medium"
+          >
+            info@ilmoirfan.ai
+          </a>
+        </div>
+      </div>
     </div>
   );
 };

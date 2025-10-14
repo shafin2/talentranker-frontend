@@ -108,16 +108,25 @@ export const AuthProvider = ({ children }) => {
           // If profile fetch fails, clear invalid token
           console.error('Failed to fetch profile:', error);
           tokenManager.clearTokens();
-          dispatch({ type: AUTH_ACTIONS.SET_LOADING, payload: false });
+          dispatch({
+            type: AUTH_ACTIONS.SET_USER,
+            payload: { user: null },
+          });
         }
       } else {
         // No token, user is not authenticated
-        dispatch({ type: AUTH_ACTIONS.SET_LOADING, payload: false });
+        dispatch({
+          type: AUTH_ACTIONS.SET_USER,
+          payload: { user: null },
+        });
       }
     } catch (error) {
       console.error('Auth check failed:', error);
       tokenManager.clearTokens();
-      dispatch({ type: AUTH_ACTIONS.SET_LOADING, payload: false });
+      dispatch({
+        type: AUTH_ACTIONS.SET_USER,
+        payload: { user: null },
+      });
     }
   };
 
