@@ -1,5 +1,4 @@
-import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import Navigation from '../components/Navigation';
 import HeroSection from '../components/HeroSection';
@@ -8,15 +7,7 @@ import Pricing from '../components/Pricing';
 import Footer from '../components/Footer';
 
 const Landing = () => {
-  const { user, loading } = useAuth();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    // If user is already logged in, redirect to dashboard
-    if (!loading && user) {
-      navigate('/dashboard');
-    }
-  }, [user, loading, navigate]);
+  const { loading } = useAuth();
 
   // Show loading state while checking auth
   if (loading) {

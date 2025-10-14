@@ -1,4 +1,15 @@
 import apiClient from './auth.js';
+import axios from 'axios';
+
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
+// Create a public client without auth headers
+const publicClient = axios.create({
+  baseURL: API_BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
 
 // Admin API functions
 export const adminAPI = {
@@ -108,15 +119,15 @@ export const userAPI = {
   },
 };
 
-// Plan API functions (public)
+// Plan API functions (public - no auth required)
 export const planAPI = {
   getAllPlans: async () => {
-    const response = await apiClient.get('/plans');
+    const response = await publicClient.get('/plans');
     return response.data;
   },
 
   getPlanById: async (planId) => {
-    const response = await apiClient.get(`/plans/${planId}`);
+    const response = await publicClient.get(`/plans/${planId}`);
     return response.data;
   },
 };

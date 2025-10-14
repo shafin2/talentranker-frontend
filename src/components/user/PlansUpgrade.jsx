@@ -33,7 +33,7 @@ const PlansUpgrade = ({ currentPlan, onUpdate }) => {
 
   const handleSelectPlan = (plan) => {
     // Redirect to Google Form for upgrade requests
-    window.open('https://docs.google.com/forms/d/e/1FAIpQLSdASBYtErPtmjmNOSXY9HODZ6Nt4Ubcbte70gCXlAHhMwWxtA/viewform', '_blank');
+    window.open('https://docs.google.com/forms/d/e/1FAIpQLSdmpiNqq0Cz8zu47MAUXk8xWgCVeU5zzQY-X_98tHYkAp8Clg/viewform', '_blank');
   };
 
   const handleSubmitRequest = async () => {
@@ -183,7 +183,7 @@ const PlansUpgrade = ({ currentPlan, onUpdate }) => {
                     )}
                   </div>
                 ) : (
-                  <div className="text-4xl font-bold text-gray-900">Free</div>
+                  <div className="text-4xl font-bold text-gray-900">Customize Price</div>
                 )}
               </div>
 

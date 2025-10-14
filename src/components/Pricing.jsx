@@ -38,6 +38,17 @@ const Pricing = () => {
   // Filter and group plans
   const getFilteredPlans = () => {
     const regionFilter = activeTab === 'pakistan' ? 'Pakistan' : 'International';
+    
+    // For "Customized" billing cycle, show Enterprise plan
+    if (billingCycle === 'Customized') {
+      return plans.filter(plan => 
+        plan.region === regionFilter && 
+        plan.name === 'Enterprise' &&
+        plan.name !== 'Freemium'
+      );
+    }
+    
+    // For other billing cycles, filter normally
     const filteredPlans = plans.filter(plan => 
       plan.region === regionFilter && 
       plan.billingCycle === billingCycle &&
@@ -58,7 +69,7 @@ const Pricing = () => {
   const currentPlans = getFilteredPlans();
 
   const formatPrice = (plan) => {
-    if (plan.price === null || plan.price === undefined) {
+    if (plan.price === null || plan.price === undefined || plan.price === 0) {
       return 'Custom';
     }
     const symbol = plan.currency === 'PKR' ? 'Rs' : '$';
@@ -126,7 +137,7 @@ const Pricing = () => {
           {/* Billing Cycle Toggle */}
           <div className="flex justify-center mb-12">
             <div className="bg-white rounded-xl p-1 shadow-md">
-              {['Monthly', 'SixMonth', 'Annual'].map((billing) => (
+              {['Monthly', 'SixMonth', 'Annual', 'Customized'].map((billing) => (
                 <button
                   key={billing}
                   onClick={() => setBillingCycle(billing)}
@@ -180,7 +191,9 @@ const Pricing = () => {
                 )}
                 
                 <div className="text-center mb-8">
-                  <h3 className="text-2xl font-bold text-gray-800 mb-4">{plan.name}</h3>
+                  <h3 className="text-2xl font-bold text-gray-800 mb-4">
+                    {plan.name === 'Free' || plan.name === 'Freemium' || plan.name === 'Enterprise' ? 'CUSTOMIZED' : plan.name}
+                  </h3>
                   <div className="mb-2">
                     <span className="text-4xl font-bold text-gray-800">{formatPrice(plan)}</span>
                     {plan.billingCycle && (
@@ -191,18 +204,6 @@ const Pricing = () => {
                 </div>
 
                 <ul className="space-y-4 mb-8">
-                  <li className="flex items-start">
-                    <CheckIcon className="w-5 h-5 text-green-500 mt-0.5 mr-3 flex-shrink-0" />
-                    <span className="text-gray-600">
-                      {plan.jdLimit === -1 || plan.jdLimit === null ? 'Unlimited' : plan.jdLimit} Job Descriptions
-                    </span>
-                  </li>
-                  <li className="flex items-start">
-                    <CheckIcon className="w-5 h-5 text-green-500 mt-0.5 mr-3 flex-shrink-0" />
-                    <span className="text-gray-600">
-                      {plan.cvLimit === -1 || plan.cvLimit === null ? 'Unlimited' : plan.cvLimit} CV Reviews
-                    </span>
-                  </li>
                   {plan.features?.map((feature, featureIndex) => (
                     <li key={featureIndex} className="flex items-start">
                       <CheckIcon className="w-5 h-5 text-green-500 mt-0.5 mr-3 flex-shrink-0" />
@@ -211,9 +212,9 @@ const Pricing = () => {
                   ))}
                 </ul>
 
-                {plan.price === null ? (
+                {plan.price === null || plan.price === 0 ? (
                   <a 
-                    href="https://forms.gle/YOUR_CONTACT_FORM_ID" 
+                    href="https://docs.google.com/forms/d/e/1FAIpQLSdmpiNqq0Cz8zu47MAUXk8xWgCVeU5zzQY-X_98tHYkAp8Clg/viewform" 
                     target="_blank" 
                     rel="noopener noreferrer" 
                     className="block"
@@ -223,12 +224,12 @@ const Pricing = () => {
                       whileTap={{ scale: 0.98 }}
                       className="w-full py-4 rounded-xl font-semibold text-lg transition-all duration-300 border-2 border-primary-600 text-primary-600 hover:bg-primary-50"
                     >
-                      Contact Sales
+                      Request Upgrade
                     </motion.button>
                   </a>
                 ) : (
                   <a 
-                    href={`https://forms.gle/YOUR_PURCHASE_FORM_ID?entry.plan=${encodeURIComponent(plan.name)}&entry.region=${encodeURIComponent(plan.region)}&entry.billing=${encodeURIComponent(plan.billingCycle)}&entry.price=${encodeURIComponent(plan.price)}&entry.currency=${encodeURIComponent(plan.currency)}`}
+                    href="https://docs.google.com/forms/d/e/1FAIpQLSdmpiNqq0Cz8zu47MAUXk8xWgCVeU5zzQY-X_98tHYkAp8Clg/viewform"
                     target="_blank" 
                     rel="noopener noreferrer" 
                     className="block"
@@ -242,7 +243,7 @@ const Pricing = () => {
                           : 'border-2 border-primary-600 text-primary-600 hover:bg-primary-50'
                       }`}
                     >
-                      Buy Now
+                      Request Upgrade
                     </motion.button>
                   </a>
                 )}
